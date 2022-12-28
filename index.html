@@ -15,7 +15,7 @@
         </div>
 
         <!-- Splash Page -->
-        <div class="crd" id="splas-page" >
+        <div class="crd" id="splash-page" >
             <form id="start-form">
                 <div class="selection-container">
                     <!-- 10 Questions Radio input -->
@@ -64,7 +64,7 @@
 
         <!-- Countdown Page -->
         <div class="card" id="countdown-page" hidden>
-            <h1 class="countdown">3</h1>
+            <h1 class="countdown"></h1>
         </div>
 
         <!-- Game Page -->
@@ -73,8 +73,8 @@
             <div class="item-container"></div>
             <!-- Right / wrong button -->
             <div class="item-footer">
-                <button class="wrong">Wrong</button>
-                <button class="right">Right</button>
+                <button class="wrong" onclick="select(false)">Wrong</button>
+                <button class="right" onclick="select(true)">Right</button>
             </div>
         </div>
 
@@ -95,6 +95,8 @@
 
     </div>
     <!-- Script -->
+    <script src="./shuffle.js"></script>
     <script src="script.js"></script>
+
 </body>
 </html>

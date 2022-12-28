@@ -21,6 +21,7 @@ const playAgainBtn = document.querySelector('.play-again');
 // Equations
 let questionAmount = 0;
 let equationsArray = [];
+let playerGuessArray= [];
 
 // Game Page
 let firstNumber = 0;
@@ -31,60 +32,127 @@ const wrongFormat = [];
 // Time
 
 // Scroll
+let valueY = 0;
 
+// Scroll and store user selection in playerGuessArray
+function select(guessedTrue) {
+  console.log('player guess aray:', playerGuessArray);
+  //Scroll 80 pixels
+  valueY += 80;
+  itemContainer.scroll(0, valueY);
+  //Add player guess to Array
+  return guessedTrue ? playerGuessArray.push('true') : playerGuessArray.push('false');
+}
+
+
+//Displays Game Page
+function showGamePage() {
+  gamePage.hidden = false;
+  countdownPage.hidden = true;
+}
+
+
+
+// Get random number up to a max number
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
 // Create Correct/Incorrect Random Equations
 function createEquations() {
   // Randomly choose how many correct equations there should be
-  // const correctEquations = 
-  // Set amount of wrong equations
-  // const wrongEquations = 
-  // Loop through, multiply random numbers up to 9, push to array
-  // for (let i = 0; i < correctEquations; i++) {
-  //   firstNumber = 
-  //   secondNumber = 
-  //   const equationValue = firstNumber * secondNumber;
-  //   const equation = `${firstNumber} x ${secondNumber} = ${equationValue}`;
-  //   equationObject = { value: equation, evaluated: 'true' };
-  //   equationsArray.push(equationObject);
-  // }
-  // Loop through, mess with the equation results, push to array
-  // for (let i = 0; i < wrongEquations; i++) {
-  //   firstNumber = 
-  //   secondNumber = 
-  //   const equationValue = firstNumber * secondNumber;
-  //   wrongFormat[0] = `${firstNumber} x ${secondNumber + 1} = ${equationValue}`;
-  //   wrongFormat[1] = `${firstNumber} x ${secondNumber} = ${equationValue - 1}`;
-  //   wrongFormat[2] = `${firstNumber + 1} x ${secondNumber} = ${equationValue}`;
-  //   const formatChoice = 
-  //   const equation = wrongFormat[formatChoice];
-  //   equationObject = { value: equation, evaluated: 'false' };
-  //   equationsArray.push(equationObject);
-  // }
+  const correctEquations = getRandomInt(questionAmount);
+  console.log('correct equations:', correctEquations);
+  //Set amount of wrong equations
+  const wrongEquations = questionAmount - correctEquations
+  console.log('wrong equations:', wrongEquations);
+  //Loop through, multiply random numbers up to 9, push to array
+  for (let i = 0; i < correctEquations; i++) {
+    firstNumber = getRandomInt(9);
+    secondNumber = getRandomInt(9);
+    const equationValue = firstNumber * secondNumber;
+    const equation = `${firstNumber} x ${secondNumber} = ${equationValue}`;
+    equationObject = { value: equation, evaluated: 'true' };
+    equationsArray.push(equationObject);
+  }
+  //Loop through, mess with the equation results, push to array
+  for (let i = 0; i < wrongEquations; i++) {
+    firstNumber = getRandomInt(9);
+    secondNumber = getRandomInt(9);
+    const equationValue = firstNumber * secondNumber;
+    wrongFormat[0] = `${firstNumber} x ${secondNumber + 1} = ${equationValue}`;
+    wrongFormat[1] = `${firstNumber} x ${secondNumber} = ${equationValue - 1}`;
+    wrongFormat[2] = `${firstNumber + 1} x ${secondNumber} = ${equationValue}`;
+    const formatChoice = getRandomInt(3)
+    const equation = wrongFormat[formatChoice];
+    equationObject = { value: equation, evaluated: 'false' };
+    equationsArray.push(equationObject);
+  }
+  shuffle(equationsArray);
+}
+
+//Add Equations to DOM
+function equationsToDoom(){
+  equationsArray.forEach((equation) => {
+    // item
+    const item = document.createElement('div');
+    item.classList.add('item');
+    //equation text
+    const equationText = document.createElement('h1');
+    equationText.textContent = equation.value;
+    //Append
+    item.appendChild(equationText);
+    itemContainer.appendChild(item);
+
+  });
 }
 
 // Dynamically adding correct/incorrect equations
-// function populateGamePage() {
-//   // Reset DOM, Set Blank Space Above
-//   itemContainer.textContent = '';
-//   // Spacer
-//   const topSpacer = document.createElement('div');
-//   topSpacer.classList.add('height-240');
-//   // Selected Item
-//   const selectedItem = document.createElement('div');
-//   selectedItem.classList.add('selected-item');
-//   // Append
-//   itemContainer.append(topSpacer, selectedItem);
+function populateGamePage() {
+  // Reset DOM, Set Blank Space Above
+  itemContainer.textContent = '';
+  // Spacer
+  const topSpacer = document.createElement('div');
+  topSpacer.classList.add('height-240');
+  // Selected Item
+  const selectedItem = document.createElement('div');
+  selectedItem.classList.add('selected-item');
+  // Append
+  itemContainer.append(topSpacer, selectedItem);
 
-//   // Create Equations, Build Elements in DOM
+  // Create Equations, Build Elements in DOM
+  createEquations();
+  equationsToDoom();
+  // Set Blank Space Below
+  const bottomSpacer = document.createElement('div');
+  bottomSpacer.classList.add('height-500');
+  itemContainer.appendChild(bottomSpacer);
+}
 
-//   // Set Blank Space Below
-//   const bottomSpacer = document.createElement('div');
-//   bottomSpacer.classList.add('height-500');
-//   itemContainer.appendChild(bottomSpacer);
-// }
+//Displays 3,2,1,...
+function countdownStart(){
+  countdown.textContent = "3";
+  setTimeout(() => {
+    countdown.textContent = '2';
+  }, 1000);
+  setTimeout(() => {
+    countdown.textContent = '1';
+  }, 2000);
+  setTimeout(() => {
+    countdown.textContent = 'Go!';
+  }, 3000);
+}
+
+// Navigate from splash page to countdown page
+function showCountdow(){
+  countdownPage.hidden = false;
+  splashPage.hidden = true;
+  countdownStart();
+  populateGamePage();
+  setTimeout(showGamePage, 4000);
+};
+
 
 //Get the value from selected radio button
-
 function getRadioValue() {
   let radioValue;
   radioInputs.forEach((radioInput) => {
@@ -96,11 +164,18 @@ function getRadioValue() {
 
 }
 
+
+// 
+
 //Form that decides amount of questions
 function selectQuestionAmount(e) {
   e.preventDefault();
   questionAmount = getRadioValue();
   console.log('question amount', questionAmount)
+  if (questionAmount) {
+    showCountdow();
+  }
+  
 }
 
 startForm.addEventListener('click', () => {
