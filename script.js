@@ -36,13 +36,21 @@ let timePlayed = 0;
 let baseTime = 0;
 let penaltyTime = 0;
 let finalTime = 0;
-let finalTimeDisplay = '0.0s';
+let finalTimeDisplay = '0.0';
 
 // Scroll
 let valueY = 0;
 
+//Refresh Splash Page best scores
+function bestScoresToDOM() {
+  bestScores.forEach((bestScore, index) => {
+    const bestScoreEl = bestScore;
+    bestScoreEl.textContent = `${bestScoreArray[index].bestScore}`;
+  });
+}
+
 // Check local storage for best score and set bestScorearray
-function getSaveBestScores () {
+function getSavedBestScores () {
   if (localStorage.getItem('bestScores')) {
     bestScoreArray = JSON.parse(localStorage.bestScores);
   } else {
@@ -54,6 +62,26 @@ function getSaveBestScores () {
     ];
     localStorage.setItem('bestScores', JSON.stringify(bestScoreArray));
   }
+  bestScoresToDOM();
+}
+
+//Update Best score Array
+function updateBestscore() {
+  bestScoreArray.forEach((score, index) => {
+    //select correct best score to update
+    if(questionAmount == score.questions) {
+      //return best core as number wit one decimal
+      const savedBestScore = Number(bestScoreArray[index].bestScore);
+      //update if the new final sore less replacing 0.
+      if (savedBestScore == 0 || savedBestScore > finalTime) {
+        bestScoreArray[index].bestScore = finalTimeDisplay;
+      }
+    }
+  });
+  //Update splash page
+  bestScoresToDOM();
+  //save to local storage
+  localStorage.setItem('bestScores', JSON.stringify(bestScoreArray));
 }
 
 // Reset the game
@@ -85,6 +113,7 @@ function scoresToDOM () {
   baseTimeEl.textContent = `Base Time: ${baseTime}s`;
   penaltyTimeEl.textContent = `Penalty: +${penaltyTime}s`;
   finalTimeEl.textContent = `${finalTimeDisplay}s`;
+  updateBestscore();
   //Scroll to top, go to scorepage
   itemContainer.scrollTo({top: 0, behavior: 'instant'});
   showScorePage();
@@ -287,4 +316,4 @@ startForm.addEventListener('submit', selectQuestionAmount);
 gamePage.addEventListener('click', startTimer);
 
 // on load
-getSaveBestScores();
+getSavedBestScores();
